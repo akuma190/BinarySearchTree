@@ -1,8 +1,12 @@
 package BinarySearchTree;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.TreeMap;
 
 public class BinaryTree {
 	static int nodeSum = 0;
@@ -13,6 +17,15 @@ public class BinaryTree {
 		temp.left = null;
 		temp.right = null;
 		return temp;
+	}
+
+	// creating node with height
+	public NodeHeight createNewNode(int data) {
+		NodeHeight node = new NodeHeight();
+		node.left = null;
+		node.right = null;
+		node.data = data;
+		return node;
 	}
 
 	public void inOrder(Node node) {
@@ -427,28 +440,416 @@ public class BinaryTree {
 //
 //		return t1.data == t2.data && checkIfIdentical(t1.left, t2.left) && checkIfIdentical(t1.right, t2.right);
 //	}
-	
-	//To get the level of a binary tree
-	//if it is found in the left side then recursion wont go to right side.
+
+	// To get the level of a binary tree
+	// if it is found in the left side then recursion wont go to right side.
 	public int getLevelOfNode(Node node, int val, int level) {
-	    if(node == null) {
-	      return 0;
-	    }
-	    
-	    int l;
-	    
-	    if(node.data == val) {
-	      return level;
-	    }
-	    
-	    l = getLevelOfNode(node.left, val, level + 1);
-	    
-	    if(l != 0) {
-	      return l;
-	    }
-	    
-	    l = getLevelOfNode(node.right, val, level + 1);
-	    
-	    return l;
-	  }
+		if (node == null) {
+			return 0;
+		}
+
+		int l;
+
+		if (node.data == val) {
+			return level;
+		}
+
+		l = getLevelOfNode(node.left, val, level + 1);
+
+		if (l != 0) {
+			return l;
+		}
+
+		l = getLevelOfNode(node.right, val, level + 1);
+
+		return l;
+	}
+
+	// printing the top view of a binary tree
+	// in treemap we can store in ascending or descending order.
+	public void prinTopView(NodeHeight node) {
+		if (node == null) {
+			return;
+		} else {
+			TreeMap<Integer, Integer> tree = new TreeMap<Integer, Integer>();
+			Queue<NodeHeight> qu = new LinkedList<NodeHeight>();
+			// System.out.println(node.height);
+			qu.add(node);
+			while (!qu.isEmpty()) {
+				NodeHeight top = qu.remove();
+				int hi = top.height;
+
+				if (tree.get(hi) == null) {
+					tree.put(hi, top.data);
+				}
+
+				if (top.left != null) {
+					top.left.height = hi - 1;
+					qu.add(top.left);
+				}
+
+				if (top.right != null) {
+					top.right.height = hi - 1;
+					qu.add(top.right);
+				}
+			}
+			System.out.println(tree.values());
+		}
+	}
+
+	// this is to give the bottom view of the binary tree.
+	public void bottomView(NodeHeight node) {
+		if (node == null) {
+			return;
+		}
+
+		TreeMap<Integer, Integer> m = new TreeMap<Integer, Integer>();
+
+		Queue<NodeHeight> q = new LinkedList<NodeHeight>();
+		q.add(node);
+
+		while (!q.isEmpty()) {
+			NodeHeight temp = q.remove();
+			int hd = temp.height;
+
+			m.put(hd, temp.data);
+
+			if (temp.left != null) {
+				temp.left.height = hd - 1;
+				q.add(temp.left);
+			}
+
+			if (temp.right != null) {
+				temp.right.height = hd + 1;
+				q.add(temp.right);
+			}
+		}
+		System.out.println(m.values());
+	}
+	// printing the boundary of a binary search tree
+	// first print the left side then the leaf nodes then the right side.
+
+//	public void printBoundary(Node node) {
+//	    if (node != null) {
+//	      System.out.print(node.data + " ");
+//
+//	      printBoundaryLeft(node.left);
+//
+//	      printLeaves(node.left);
+//	      printLeaves(node.right);
+//
+//	      printBoundaryRight(node.right);
+//	    }
+//	  }
+
+	public void printLeftBoundary(Node node) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.left != null) {
+			System.out.print(node.data + " ");
+			printLeftBoundary(node.left);
+		} else if (node.right != null) {
+			System.out.print(node.data + " ");
+			printLeftBoundary(node.right);
+		}
+	}
+
+	public void printRightBoundary(Node node) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.right != null) {
+			System.out.print(node.data + " ");
+			printRightBoundary(node.right);
+		} else if (node.left != null) {
+			System.out.print(node.data + " ");
+			printRightBoundary(node.left);
+		}
+	}
+
+	public void printLeaveNodes(Node node) {
+		if (node == null) {
+			return;
+		} else if (node.left == null && node.right == null) {
+			System.out.print(node.data + " ");
+		} else {
+			printLeaveNodes(node.left);
+			printLeaveNodes(node.right);
+		}
+	}
+
+	// this method will be used to print by vertical level
+	public void printVerticalOrder(Node node) {
+		if (node == null) {
+			return;
+		} else {
+			int height = 0;
+			TreeMap<Integer, ArrayList<Integer>> map = new TreeMap<Integer, ArrayList<Integer>>();
+			printInterVertOrder(map, node, height);
+			for (Map.Entry<Integer, ArrayList<Integer>> cm : map.entrySet()) {
+				System.out.println(cm.getValue());
+			}
+		}
+	}
+
+	public void printInterVertOrder(TreeMap<Integer, ArrayList<Integer>> map, Node node, int height) {
+		if (node == null) {
+			return;
+		} else {
+			if (map.get(height) == null) {
+				ArrayList<Integer> list = new ArrayList<Integer>();
+				list.add(node.data);
+				map.put(height, list);
+			} else {
+				ArrayList<Integer> list = map.get(height);
+				list.add(node.data);
+				map.put(height, list);
+			}
+			printInterVertOrder(map, node.left, height - 1);
+			printInterVertOrder(map, node.right, height + 1);
+		}
+	}
+
+	// this method will be used to print by vertical level
+	public void sumVerticalOrder(Node node) {
+		if (node == null) {
+			return;
+		} else {
+			int height = 0;
+			TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+			sumInterVertOrder(map, node, height);
+			for (Map.Entry<Integer, Integer> cm : map.entrySet()) {
+				System.out.println(cm.getValue());
+			}
+		}
+	}
+
+	public void sumInterVertOrder(TreeMap<Integer, Integer> map, Node node, int height) {
+		if (node == null) {
+			return;
+		} else {
+			if (map.get(height) == null) {
+				map.put(height, node.data);
+			} else {
+				int sum = map.get(height);
+				map.put(height, (sum + node.data));
+			}
+			sumInterVertOrder(map, node.left, height - 1);
+			sumInterVertOrder(map, node.right, height + 1);
+		}
+	}
+
+	// to print the sum of all the elements at a particular level
+	// size will represent the number of elements at that level and that will be the
+	// nof of iterations for us.
+	public void sumEachLevel(Node node) {
+		if (node == null) {
+			return;
+		} else {
+			int sum = 0;
+			Queue<Node> qu = new LinkedList<Node>();
+			qu.add(node);
+			while (true) {
+				int size = qu.size();
+				if (size == 0) {
+					break;
+				}
+				sum = 0;
+				while (size > 0) {
+					Node top = qu.remove();
+					sum = sum + top.data;
+					if (top.left != null) {
+						qu.add(top.left);
+					}
+
+					if (top.right != null) {
+						qu.add(top.right);
+					}
+					size = size - 1;
+				}
+				System.out.println(sum);
+			}
+		}
+	}
+
+	// search recursively
+	public boolean serachBinaryTree(Node node, int val) {
+		if (node == null) {
+			return false;
+		} else if (node.data == val) {
+			return true;
+		} else {
+			boolean left = serachBinaryTree(node.left, val);
+			boolean right = serachBinaryTree(node.right, val);
+			return left || right;
+		}
+	}
+
+	// searching iteratively
+	public boolean iterativeSearch(Node node, int key) {
+		if (node == null) {
+			return false;
+		}
+
+		Queue<Node> q = new LinkedList<Node>();
+		q.add(node);
+
+		while (!q.isEmpty()) {
+			Node t = q.remove();
+			if (t.data == key) {
+				return true;
+			}
+
+			if (t.left != null) {
+				q.add(t.left);
+			}
+
+			if (t.right != null) {
+				q.add(t.right);
+			}
+		}
+
+		return false;
+	}
+
+	// printing a binary tree in spiral form
+	// this can be done using two stacks.
+	public void printSpiralForm(Node node) {
+		if (node == null) {
+			return;
+		} else {
+			Stack<Node> st1 = new Stack<Node>();
+			Stack<Node> st2 = new Stack<Node>();
+			st1.push(node);
+			while (!st1.isEmpty() || !st2.isEmpty()) {
+
+				while (!st1.isEmpty()) {
+					Node top = st1.pop();
+					System.out.print(top.data + " ");
+					if (top.right != null) {
+						st2.push(top.right);
+					}
+
+					if (top.left != null) {
+						st2.push(top.left);
+					}
+				}
+				System.out.println();
+				while (!st2.isEmpty()) {
+					Node top1 = st2.pop();
+					System.out.print(top1.data + " ");
+					if (top1.left != null) {
+						st1.push(top1.left);
+					}
+					if (top1.right != null) {
+						st1.push(top1.right);
+					}
+				}
+				System.out.println();
+			}
+		}
+	}
+
+	// printing the elements between any two levels
+	public void printBetweenLevels(Node node, int min, int max) {
+		if (node == null) {
+			return;
+		} else {
+			int level = 1;
+			Queue<Node> qu = new LinkedList<Node>();
+			qu.add(node);
+			while (true) {
+				int size = qu.size();
+				if (size < 0 || level > max) {
+					break;
+				}
+
+				while (size > 0) {
+					Node top = qu.remove();
+					if (level >= min && level <= max) {
+						System.out.print(top.data + " ");
+					}
+					if (top.right != null) {
+						qu.add(top.right);
+					}
+					if (top.left != null) {
+						qu.add(top.left);
+					}
+					size = size - 1;
+				}
+				level = level + 1;
+				System.out.println();
+			}
+		}
+	}
+
+	// finding the maximum width of any level of a binary tree.
+	public int getMaximumWidth(Node node) {
+		if (node == null) {
+			return 0;
+		}
+
+		Queue<Node> q = new LinkedList<Node>();
+		q.add(node);
+
+		int maxWidth = 1;
+
+		while (true) {
+			int size = q.size();
+			if (size == 0) {
+				break;
+			}
+
+			if (size > maxWidth) {
+				maxWidth = size;
+			}
+
+			while (size > 0) {
+				Node t = q.remove();
+
+				if (t.left != null) {
+					q.add(t.left);
+				}
+
+				if (t.right != null) {
+					q.add(t.right);
+				}
+				size--;
+
+			}
+		}
+
+		return maxWidth;
+	}
+	//checking if two trees are mirror to each other or not
+	public boolean checkMirror(Node node1,Node node2) {
+		if(node1==null && node2 ==null) {
+			return true;
+		}else if((node1!=null && node2 ==null)||(node1==null && node2 !=null)) {
+			return false;
+		}else if(node1.data!=node2.data) {
+			return false;
+		}else {
+			boolean left=checkMirror(node1.left,node2.right);
+			boolean right=checkMirror(node1.right,node2.left);
+			return left && right;
+		}
+	}
+	//checking if two binary tree are only mirror strucure the data here won't matter
+
+	public boolean checkMirrorStruct(Node node1,Node node2) {
+		if(node1==null && node2 ==null) {
+			return true;
+		}else if(node1==null || node2 ==null) {
+			return false;
+		}else {
+			boolean left=checkMirrorStruct(node1.left,node2.right);
+			boolean right=checkMirrorStruct(node1.right,node2.left);
+			return left && right;
+		}
+	}
+	
 }
