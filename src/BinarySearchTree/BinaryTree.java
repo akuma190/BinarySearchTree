@@ -824,32 +824,423 @@ public class BinaryTree {
 
 		return maxWidth;
 	}
-	//checking if two trees are mirror to each other or not
-	public boolean checkMirror(Node node1,Node node2) {
-		if(node1==null && node2 ==null) {
-			return true;
-		}else if((node1!=null && node2 ==null)||(node1==null && node2 !=null)) {
-			return false;
-		}else if(node1.data!=node2.data) {
-			return false;
-		}else {
-			boolean left=checkMirror(node1.left,node2.right);
-			boolean right=checkMirror(node1.right,node2.left);
-			return left && right;
-		}
-	}
-	//checking if two binary tree are only mirror strucure the data here won't matter
 
-	public boolean checkMirrorStruct(Node node1,Node node2) {
-		if(node1==null && node2 ==null) {
+	// checking if two trees are mirror to each other or not
+	public boolean checkMirror(Node node1, Node node2) {
+		if (node1 == null && node2 == null) {
 			return true;
-		}else if(node1==null || node2 ==null) {
+		} else if ((node1 != null && node2 == null) || (node1 == null && node2 != null)) {
 			return false;
-		}else {
-			boolean left=checkMirrorStruct(node1.left,node2.right);
-			boolean right=checkMirrorStruct(node1.right,node2.left);
+		} else if (node1.data != node2.data) {
+			return false;
+		} else {
+			boolean left = checkMirror(node1.left, node2.right);
+			boolean right = checkMirror(node1.right, node2.left);
 			return left && right;
 		}
 	}
-	
+	// checking if two binary tree are only mirror strucure the data here won't
+	// matter
+
+	public boolean checkMirrorStruct(Node node1, Node node2) {
+		if (node1 == null && node2 == null) {
+			return true;
+		} else if (node1 == null || node2 == null) {
+			return false;
+		} else {
+			boolean left = checkMirrorStruct(node1.left, node2.right);
+			boolean right = checkMirrorStruct(node1.right, node2.left);
+			return left && right;
+		}
+	}
+
+	// checking if the two trees have the same structure.
+	// as we are checking all the nodes then time complexity will be O(n)
+	public boolean ifSameStructure(Node node1, Node node2) {
+		if (node1 == null && node2 == null) {
+			return true;
+		}
+
+		if (node1 == null || node2 == null) {
+			return false;
+		}
+
+		return ifSameStructure(node1.left, node2.left) && ifSameStructure(node1.right, node2.right);
+	}
+
+	// to check if the binary tree is foldable tree or not.
+	// In this we need to identify whether the left and right subtree are mirror
+	// structure or not.
+	public boolean ifFoldableTree(Node node) {
+		if (node == null) {
+			return true;
+		}
+
+		return ifMirrorStructure(node.left, node.right);
+	}
+
+	public boolean ifMirrorStructure(Node node1, Node node2) {
+		if (node1 == null && node2 == null) {
+			return true;
+		}
+
+		if (node1 == null || node2 == null) {
+			return false;
+		}
+
+		return ifMirrorStructure(node1.left, node2.right) && ifMirrorStructure(node1.right, node2.left);
+	}
+
+	// to check if two binary tree are isomorphic
+	// we check both the left and right element if they are same.
+	// compleifity O(left+right)
+	public boolean ifIsomorphic(Node node1, Node node2) {
+		if (node1 == null && node2 == null) {
+			return true;
+		}
+
+		if (node1 == null || node2 == null) {
+			return false;
+		}
+
+		if (node1.data != node2.data) {
+			return false;
+		}
+
+		return (ifIsomorphic(node1.left, node2.left) && ifIsomorphic(node1.right, node2.right))
+				|| (ifIsomorphic(node1.left, node2.right) && ifIsomorphic(node1.right, node2.left));
+	}
+
+	// getting the widht of a level in binary tree.
+	// number of nodes at that level
+	public int getWidthOfLevel(Node node, int level) {
+		if (node == null) {
+			return 0;
+		}
+
+		if (level == 1) {// we have reached th desirde level.
+			return 1;
+		}
+
+		return getWidthOfLevel(node.left, level - 1) + getWidthOfLevel(node.right, level - 1);
+	}
+
+	// creating a double tree out of the given binary tree.
+	// each node should be added to the left side.
+	// we are iterating each node so O(n)
+	public void doubleTree(Node node) {
+		if (node == null) {
+			return;
+		}
+
+		doubleTree(node.left);
+		doubleTree(node.right);
+
+		Node newNode = createNode(node.data);
+		newNode.left = node.left;
+		node.left = newNode;
+	}
+
+	// creating a binary tree fromt he inorder and pre order traverasal.
+	// 2,4,7,3,8
+	// 7,4,3,2,8
+	// we will hvae the preorder and inorder array.
+	// we are searching for each element of inorder in preorder thus O(n2)
+	int preIndex;
+
+	public Node buildTreeFromInOrderPreOrder(int preorderArray[], int inorderArray[], int start, int end) {
+		if (start > end) {
+			return null;
+		}
+
+		Node node = createNode(preorderArray[preIndex++]);
+
+		if (start == end) {
+			return node;
+		}
+
+		int inoderIndex = getInorderIndex(node.data, inorderArray, start, end);
+
+		node.left = buildTreeFromInOrderPreOrder(preorderArray, inorderArray, start, inoderIndex - 1);
+		node.right = buildTreeFromInOrderPreOrder(preorderArray, inorderArray, inoderIndex + 1, end);
+
+		return node;
+	}
+
+	private int getInorderIndex(int val, int in[], int start, int end) {
+		for (int i = start; i <= end; i++) {
+			if (in[i] == val) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	// getting the height of the binary tree by iteration.
+	// time complexity is O(n)
+	public int heightIteratively(Node node) {
+		if (node == null) {
+			return -1;
+		}
+
+		Queue<Node> q = new LinkedList<Node>();
+		q.add(node);
+		int height = 0;
+
+		while (true) {
+			int size = q.size();
+			if (size == 0) {
+				break;
+			}
+
+			while (size > 0) {
+				Node t = q.remove();
+				if (t.left != null) {
+					q.add(t.left);
+				}
+
+				if (t.right != null) {
+					q.add(t.right);
+				}
+
+				size--;
+			}
+
+			height = height + 1;
+		}
+		return height;
+	}
+
+	// getting the diameter of the binary tree.
+	// diameter is the distance between any two leaf nodes.
+	// for each node we tak the sum of max elements from left and right side then
+	// add 1.
+	// the node which gives the mas sum has the max diameter.
+	// O(n)*(O(n)+O(n))
+	int diameter;
+
+	public int getDiameter(Node node) {
+		if (node == null) {
+			return 0;
+		}
+
+		if (node.left == null && node.right == null) {
+			return 1;
+		}
+
+		int lH = getDiameter(node.left);
+		int rH = getDiameter(node.right);
+
+		diameter = Math.max(diameter, lH + rH + 1);
+
+		return Math.max(lH, rH) + 1;// this will geive the number of node to the left or right of a node
+	}
+
+	// if the binary tree is a height balanced tree.
+	// for any node the difference between the left height and right height should
+	// not be more than 1.
+	public int ifHeightBalancedTree(Node node) {
+		if (node == null) {
+			return 0;
+		}
+
+		if (node.left == null && node.right == null) {
+			return 1;
+		}
+
+		int lH = ifHeightBalancedTree(node.left);
+		int rH = ifHeightBalancedTree(node.right);
+
+		if (lH == -1 || rH == -1 || Math.abs(lH - rH) > 1) {
+			return -1;
+		}
+
+		return Math.max(lH, rH) + 1;
+	}
+
+	// to check if the given sum is equal to the sum of nodes in the binary tree.
+	public boolean ifRootToLeafPathSumMatches(Node node, int total) {
+		if (node == null) {
+			return false;
+		}
+
+		if (node.left == null && node.right == null && total == node.data)
+			return true;
+
+		return ifRootToLeafPathSumMatches(node.left, total - node.data)
+				|| ifRootToLeafPathSumMatches(node.right, total - node.data);
+	}
+
+	// to print every path in a binary search tree.
+	// use an array and then keep on adding the value in the array.
+	// time complexitt as we cover each element O(n).
+	// Space complexityO(n)
+	public void printRootToLeaf(Node node) {
+		if (node == null) {
+			return;
+		}
+
+		int arr[] = new int[10];
+		printRootToLeafImpl(node, arr, 0);
+	}
+
+	private void printRootToLeafImpl(Node node, int[] arr, int index) {
+		if (node == null) {
+			return;
+		}
+
+		arr[index] = node.data;
+
+		if (node.left == null && node.right == null) {
+			printArray(arr, index);
+		}
+
+		printRootToLeafImpl(node.left, arr, index + 1);
+		printRootToLeafImpl(node.right, arr, index + 1);
+	}
+
+	private void printArray(int[] arr, int index) {
+		for (int i = 0; i <= index; i++) {
+			System.out.print(arr[i] + " ");
+		}
+		System.out.println();
+	}
+
+	// find the max sum from root to leaf.
+	int maxSum;
+
+	public void maxSumFromRootToLeaf(Node node, int sum) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.left == null && node.right == null && sum + node.data > maxSum) {
+			maxSum = sum + node.data;
+			return;
+		}
+
+		maxSumFromRootToLeaf(node.left, sum + node.data);
+		maxSumFromRootToLeaf(node.right, sum + node.data);
+	}
+
+	// sum of all the numbers from the root to leaf in binary treee.
+	int sumRootToLeaf;
+
+	public void sumRootToLeaf(Node node, int i) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.left == null && node.right == null) {
+			sumRootToLeaf = sumRootToLeaf + (i * 10 + node.data);
+			return;
+		}
+
+		sumRootToLeaf(node.left, i * 10 + node.data);
+		sumRootToLeaf(node.right, i * 10 + node.data);
+	}
+
+	// finding the min and max value of a binary tree.
+	int maximum = Integer.MIN_VALUE;
+	int minimum = Integer.MAX_VALUE;
+
+	public void findMinMaxValue(Node node) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.data > maximum) {
+			maximum = node.data;
+		}
+
+		if (node.data < minimum) {
+			minimum = node.data;
+		}
+
+		findMinMaxValue(node.left);
+		findMinMaxValue(node.right);
+	}
+
+	// getting the minimum height of the tree.
+	// one og the ways is to do it by level order traversal.
+	public int findMinHeightLevelwise(Node node) {
+		if (node == null) {
+			return 0;
+		}
+
+		int height = 1;
+
+		Queue<Node> queue = new LinkedList<>();
+		queue.add(node);
+
+		while (true) {
+			int size = queue.size();
+
+			if (queue.isEmpty() || size == 0) {
+				break;
+			}
+
+			while (size > 0) {
+				Node temp = queue.remove();
+
+				if (temp.left == null && temp.right == null) {
+					return height;
+				}
+
+				if (temp.left != null) {
+					queue.add(temp.left);
+				}
+
+				if (temp.right != null) {
+					queue.add(temp.right);
+				}
+
+				size--;
+			}
+
+			height++;
+		}
+
+		return height;
+	}
+
+	// other using recursion.
+	public int minHeight(Node node) {
+		if (node == null) {
+			return 0;
+		}
+
+		if (node.left == null && node.right == null) {
+			return 1;
+		}
+
+		if (node.left == null) {
+			return minHeight(node.right) + 1;
+		}
+
+		if (node.right == null) {
+			return minHeight(node.left) + 1;
+		}
+
+		return Math.min(minHeight(node.left), minHeight(node.right)) + 1;
+	}
+
+	// recursive
+	int minHeight = Integer.MAX_VALUE;
+
+	public void findMinHeightRecursive(Node node, int height) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.left == null && node.right == null && height < minHeight) {
+			minHeight = height;
+		}
+
+		findMinHeightRecursive(node.left, height + 1);
+		findMinHeightRecursive(node.right, height + 1);
+	}
+	//getting the sum of all leaf nodes.
+
 }
