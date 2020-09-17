@@ -206,6 +206,7 @@ public class BinaryTree {
 	}
 
 	// level order without recursion level by level
+	//the printing will be done in level by level format.
 	public void levelStepQueue(Node node) {
 		if (node == null) {
 			return;
@@ -234,7 +235,8 @@ public class BinaryTree {
 		}
 	}
 
-	// left side view of a binary search tree
+	// left side view of a binary search tree.
+	//printing all the left side elements of the tree.
 	public void leftViewPrint(Node node) {
 		if (node.left == null) {
 			return;
@@ -252,8 +254,8 @@ public class BinaryTree {
 		}
 	}
 
+	//if a person is standing from left side then what all elements he can see.
 	int maxLevel;
-
 	public void leftViewTree(Node node, int level) {
 		if (node == null) {
 			return;
@@ -269,7 +271,8 @@ public class BinaryTree {
 	}
 
 	// int maxLevel;
-	// right vie of the binary tree.
+	// right view of the binary tree.
+	//if a person is statnding on the right side of the binary tree
 	public void rightViewTree(Node node, int level) {
 		if (node == null) {
 			return;
